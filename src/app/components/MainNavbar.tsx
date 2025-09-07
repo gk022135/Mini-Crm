@@ -78,9 +78,16 @@ const Navbar: React.FC = () => {
   const [activeItem, setActiveItem] = useState('home');
   const [isScrolled, setIsScrolled] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
 
   // Handle scroll effect
   useEffect(() => {
+    const user = localStorage.getItem('user');
+    if (user) {
+      setUser(JSON.parse(user));
+    } else {
+      setUser(currentUser); // Fallback to mock user
+    }
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
@@ -167,8 +174,8 @@ const Navbar: React.FC = () => {
                   <User className="w-4 h-4 text-gray-600" />
                 </div>
                 <div className="hidden md:block text-left">
-                  <div className="text-sm font-medium text-gray-900">{currentUser.name}</div>
-                  <div className="text-xs text-gray-500">{currentUser.email}</div>
+                  <div className="text-sm font-medium text-gray-900">{user?.name}</div>
+                  <div className="text-xs text-gray-500">{user?.email}</div>
                 </div>
                 <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''
                   }`} />
@@ -183,8 +190,8 @@ const Navbar: React.FC = () => {
                         <User className="w-5 h-5 text-white" />
                       </div>
                       <div>
-                        <div className="font-medium text-gray-900">{currentUser.name}</div>
-                        <div className="text-sm text-gray-500">{currentUser.email}</div>
+                        <div className="font-medium text-gray-900">{user?.name}</div>
+                        <div className="text-sm text-gray-500">{user?.email}</div>
                       </div>
                     </div>
                   </div>

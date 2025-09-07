@@ -4,6 +4,8 @@ import { Eye, EyeOff, Mail, Lock, User, Loader2, CheckCircle, AlertCircle, Arrow
 
 import { signIn } from 'next-auth/react';
 import axios from 'axios';
+import { useRouter } from "next/navigation";
+
 
 interface LoginFormData {
   email: string;
@@ -30,6 +32,8 @@ const LoginForm: React.FC<{
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -77,7 +81,6 @@ const LoginForm: React.FC<{
         }
       );
 
-      console.log("hi there", response.data);
 
       if (response.data.success) {
         setSuccess("Login successful! Redirecting...");
@@ -94,7 +97,8 @@ const LoginForm: React.FC<{
 
         // Call success callback after a short delay
         setTimeout(() => {
-          onSuccess?.(response.data);
+          onSuccess?.(response.data); // still call callback
+          router.push("/client/dashboard"); //navigate to dashboard
         }, 1500);
       } else {
         setError(response.data.message || "Login failed");
