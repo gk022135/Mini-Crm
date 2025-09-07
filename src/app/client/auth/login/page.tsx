@@ -2,19 +2,14 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, User, Loader2, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react';
 
-// Types
+import { signIn } from 'next-auth/react';
+import axios from 'axios';
+
 interface LoginFormData {
   email: string;
   password: string;
 }
 
-interface SignupFormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
 
 interface AuthResponse {
   success: boolean;
@@ -22,44 +17,7 @@ interface AuthResponse {
   data?: any;
 }
 
-// Simulated API calls (replace with actual axios calls)
-const apiCall = async (endpoint: string, data: any): Promise<AuthResponse> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      if (endpoint === '/api/auth/login') {
-        // Mock login validation
-        if (data.email === 'user@example.com' && data.password === 'password123') {
-          resolve({
-            success: true,
-            message: 'Login successful',
-            data: { token: 'mock-jwt-token', user: { id: 1, name: 'John Doe' } }
-          });
-        } else {
-          resolve({
-            success: false,
-            message: 'Invalid email or password'
-          });
-        }
-      } else if (endpoint === '/api/auth/signup') {
-        // Mock signup validation
-        if (data.email === 'existing@example.com') {
-          resolve({
-            success: false,
-            message: 'An account with this email already exists'
-          });
-        } else {
-          resolve({
-            success: true,
-            message: 'Account created successfully',
-            data: { token: 'mock-jwt-token', user: { id: 2, name: `${data.firstName} ${data.lastName}` } }
-          });
-        }
-      }
-    }, 2000);
-  });
-};
 
-// Login Component
 const LoginForm: React.FC<{
   onToggle: () => void;
   onSuccess?: (data: any) => void;
@@ -101,44 +59,58 @@ const LoginForm: React.FC<{
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    console.log("form data", formData);
+
     if (!validateForm()) return;
 
     setLoading(true);
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
 
     try {
-      // Replace this with actual axios call:
-      // const response = await axios.post('/api/auth/login', formData);
-      const response = await apiCall('/api/auth/login', formData);
+      const response = await axios.post(
+        "http://localhost:3000/api/auth/login",
+        formData,
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true, // ensures cookies (JWT) are set
+        }
+      );
 
-      if (response.success) {
-        setSuccess('Login successful! Redirecting...');
-        
+      console.log("hi there", response.data);
+
+      if (response.data.success) {
+        setSuccess("Login successful! Redirecting...");
+
         // Store token if provided
         if (response.data?.token) {
-          localStorage.setItem('authToken', response.data.token);
+          localStorage.setItem("authToken", response.data.token);
         }
-        
+
+        // Save user info too (optional)
+        if (response.data?.user) {
+          localStorage.setItem("user", JSON.stringify(response.data.user));
+        }
+
         // Call success callback after a short delay
         setTimeout(() => {
           onSuccess?.(response.data);
         }, 1500);
       } else {
-        setError(response.message || 'Login failed');
+        setError(response.data.message || "Login failed");
       }
     } catch (err: any) {
-      setError('Something went wrong. Please try again.');
+      setError(err.response?.data?.message || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
+
   return (
-    <div className="w-full max-w-md mx-auto">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>
+    <div className="w-full max-w-md mx-auto text-black">
+      <div className="text-center mb-8 text-black">
+        <h2 className="text-3xl font-bold text-black mb-2">Welcome Back</h2>
         <p className="text-gray-600">Sign in to your account to continue</p>
       </div>
 
@@ -148,9 +120,9 @@ const LoginForm: React.FC<{
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
             Email Address
           </label>
-          <div className="relative">
+          <div className="relative text-black">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Mail className="h-5 w-5 text-gray-400" />
+              <Mail className="h-5 w-5 text-black" />
             </div>
             <input
               id="email"
@@ -160,7 +132,7 @@ const LoginForm: React.FC<{
               required
               value={formData.email}
               onChange={handleInputChange}
-              className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-black"
               placeholder="Enter your email"
             />
           </div>
@@ -173,7 +145,7 @@ const LoginForm: React.FC<{
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Lock className="h-5 w-5 text-gray-400" />
+              <Lock className="h-5 w-5 text-black" />
             </div>
             <input
               id="password"
@@ -183,7 +155,7 @@ const LoginForm: React.FC<{
               required
               value={formData.password}
               onChange={handleInputChange}
-              className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-black"
               placeholder="Enter your password"
             />
             <button
@@ -192,9 +164,9 @@ const LoginForm: React.FC<{
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? (
-                <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                <EyeOff className="h-5 w-5 text-black hover:text-gray-600" />
               ) : (
-                <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                <Eye className="h-5 w-5 text-black hover:text-gray-600" />
               )}
             </button>
           </div>
@@ -253,6 +225,14 @@ const LoginForm: React.FC<{
             'Sign In'
           )}
         </button>
+        <div className="flex flex-col items-center justify-center text-black">
+          <button
+            onClick={() => signIn("google")}
+            className="bg-blue-600 text-white px-4 py-2 rounded"
+          >
+            Sign in with Google
+          </button>
+        </div>
 
         {/* Toggle to Signup */}
         <div className="text-center">

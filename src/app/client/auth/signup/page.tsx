@@ -3,6 +3,7 @@
 
 import React, { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, User, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import axios from 'axios';
 
 interface SignupFormData {
     firstName: string;
@@ -18,43 +19,6 @@ interface AuthResponse {
     data?: any;
 }
 
-// Simulated API calls (replace with actual axios calls)
-// Simulated API calls (replace with actual axios calls)
-const apiCall = async (endpoint: string, data: any): Promise<AuthResponse> => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            if (endpoint === '/api/auth/login') {
-                // Mock login validation
-                if (data.email === 'user@example.com' && data.password === 'password123') {
-                    resolve({
-                        success: true,
-                        message: 'Login successful',
-                        data: { token: 'mock-jwt-token', user: { id: 1, name: 'John Doe' } }
-                    });
-                } else {
-                    resolve({
-                        success: false,
-                        message: 'Invalid email or password'
-                    });
-                }
-            } else if (endpoint === '/api/auth/signup') {
-                // Mock signup validation
-                if (data.email === 'existing@example.com') {
-                    resolve({
-                        success: false,
-                        message: 'An account with this email already exists'
-                    });
-                } else {
-                    resolve({
-                        success: true,
-                        message: 'Account created successfully',
-                        data: { token: 'mock-jwt-token', user: { id: 2, name: `${data.firstName} ${data.lastName}` } }
-                    });
-                }
-            }
-        }, 2000);
-    });
-};
 
 // Signup Component
 const SignupForm: React.FC<{
@@ -158,11 +122,13 @@ const SignupForm: React.FC<{
         setSuccess('');
 
         try {
-            // Replace this with actual axios call:
-            // const response = await axios.post('/api/auth/signup', formData);
-            const response = await apiCall('/api/auth/signup', formData);
+            const response = await axios.post('http://localhost:3000/api/auth/signup', formData, {
+                headers: { "Content-Type": "application/json" }
+            });
 
-            if (response.success) {
+            console.log("hi there", response.data);
+
+            if (response.data.success) {
                 setSuccess('Account created successfully! Please check your email to verify your account.');
 
                 // Store token if provided
@@ -175,19 +141,21 @@ const SignupForm: React.FC<{
                     onSuccess?.(response.data);
                 }, 2000);
             } else {
-                setError(response.message || 'Signup failed');
+                setError(response.data.message || 'Signup failed');
             }
+
         } catch (err: any) {
-            setError('Something went wrong. Please try again.');
+            setError(err.response?.data?.message || 'Something went wrong. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
+
     return (
-        <div className="w-full max-w-md mx-auto">
+        <div className="w-full max-w-md mx-auto text-black">
             <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h2>
+                <h2 className="text-3xl font-bold text-black mb-2">Create Account</h2>
                 <p className="text-gray-600">Join us and start managing your leads effectively</p>
             </div>
 
@@ -195,7 +163,7 @@ const SignupForm: React.FC<{
                 {/* Name Fields */}
                 <div className="grid grid-cols-2 gap-4 mb-6">
                     <div>
-                        <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="firstName" className="block text-sm font-medium text-black mb-2">
                             First Name
                         </label>
                         <div className="relative">
@@ -210,14 +178,14 @@ const SignupForm: React.FC<{
                                 required
                                 value={formData.firstName}
                                 onChange={handleInputChange}
-                                className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                 placeholder="First name"
                             />
                         </div>
                     </div>
 
                     <div>
-                        <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="lastName" className="block text-sm font-medium text-black mb-2">
                             Last Name
                         </label>
                         <input
@@ -228,7 +196,7 @@ const SignupForm: React.FC<{
                             required
                             value={formData.lastName}
                             onChange={handleInputChange}
-                            className="block w-full px-3 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                            className="block w-full px-3 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                             placeholder="Last name"
                         />
                     </div>
@@ -236,7 +204,7 @@ const SignupForm: React.FC<{
 
                 {/* Email Field */}
                 <div className="mb-6">
-                    <label htmlFor="signup-email" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="signup-email" className="block text-sm font-medium text-black mb-2">
                         Email Address
                     </label>
                     <div className="relative">
@@ -251,7 +219,7 @@ const SignupForm: React.FC<{
                             required
                             value={formData.email}
                             onChange={handleInputChange}
-                            className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                            className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                             placeholder="Enter your email"
                         />
                     </div>
@@ -259,7 +227,7 @@ const SignupForm: React.FC<{
 
                 {/* Password Field */}
                 <div className="mb-6">
-                    <label htmlFor="signup-password" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="signup-password" className="block text-sm font-medium text-black mb-2">
                         Password
                     </label>
                     <div className="relative">
@@ -274,7 +242,7 @@ const SignupForm: React.FC<{
                             required
                             value={formData.password}
                             onChange={handleInputChange}
-                            className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                            className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                             placeholder="Create a password"
                         />
                         <button
@@ -295,7 +263,7 @@ const SignupForm: React.FC<{
                         <div className="mt-2">
                             <div className="flex justify-between items-center mb-1">
                                 <span className="text-xs text-gray-500">Password Strength</span>
-                                <span className="text-xs text-gray-700">{getPasswordStrengthText(passwordStrength)}</span>
+                                <span className="text-xs text-black">{getPasswordStrengthText(passwordStrength)}</span>
                             </div>
                             <div className="w-full bg-gray-200 rounded-full h-2">
                                 <div
@@ -309,7 +277,7 @@ const SignupForm: React.FC<{
 
                 {/* Confirm Password Field */}
                 <div className="mb-6">
-                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-black mb-2">
                         Confirm Password
                     </label>
                     <div className="relative">
@@ -324,7 +292,7 @@ const SignupForm: React.FC<{
                             required
                             value={formData.confirmPassword}
                             onChange={handleInputChange}
-                            className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                            className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                             placeholder="Confirm your password"
                         />
                         <button
@@ -351,7 +319,7 @@ const SignupForm: React.FC<{
                         onChange={(e) => setAcceptTerms(e.target.checked)}
                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-1"
                     />
-                    <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
+                    <label htmlFor="terms" className="ml-2 block text-sm text-black">
                         I agree to the{' '}
                         <button type="button" className="text-blue-600 hover:text-blue-500 font-medium">
                             Terms of Service

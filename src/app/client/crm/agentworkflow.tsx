@@ -45,7 +45,7 @@ interface AgentWorkflowProps {
 
 // ---- Component ----
 export default function AgentWorkflow({
-  lead = null,
+  lead,
   industry = "general",
 }: AgentWorkflowProps) {
   const defaultAgents: Agent[] = [

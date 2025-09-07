@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import LeadForm from "./leadform";
 import LeadList from "./leadlist";
-import AgentWorkflow from "./agentworkflow"; 
+import AgentWorkflow from "./agentworkflow";
 
 
 export interface Lead {
@@ -27,7 +27,7 @@ export default function CRM() {
 
   return (
     <div className="min-h-screen bg-gray-100 text-black">
-      <main className="pt-20 max-w-7xl mx-auto p-6 space-y-6">
+      <main className="pt-20 max-w-7xl mx-auto p-6 space-y-6 flex-row">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">
             MiniCRM — Industry: {selectedIndustry}
@@ -49,10 +49,9 @@ export default function CRM() {
             <LeadForm industry={selectedIndustry} onCreated={(lead) => setSelectedLead(lead)} />
             <LeadList industry={selectedIndustry} onSelect={(lead) => setSelectedLead(lead)} />
           </div>
-
-          <div className="space-y-6">
-            <AgentWorkflow lead={selectedLead} industry={selectedIndustry} />
-          </div>
+        </div>
+        <div className="space-y-6 w-full">
+          <AgentWorkflow lead={selectedLead} industry={selectedIndustry} />
         </div>
       </main>
     </div>
