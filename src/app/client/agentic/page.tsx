@@ -174,9 +174,12 @@ export const AgentWorkflow = () => {
                   type={type}
                   className="w-full px-4 py-4 bg-white/60 border border-gray-200 rounded-xl focus:outline-none focus:ring-3 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-gray-800 placeholder-gray-500"
                   placeholder={placeholder}
-                  value={leadData[key]}
+                  value={leadData[key as keyof typeof leadData]}
                   onChange={(e) =>
-                    setLeadData((prev) => ({ ...prev, [key]: e.target.value }))
+                    setLeadData((prev) => ({
+                      ...prev,
+                      [key]: e.target.value,
+                    }))
                   }
                 />
               </div>

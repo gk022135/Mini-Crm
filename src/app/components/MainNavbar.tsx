@@ -50,7 +50,7 @@ const navItems: NavItem[] = [
   {
     id: 'Leads2',
     label: 'Analytics',
-    href: '/client/crm/lead',
+    href: '/client/analytics',
     icon: BarChart3
   },
   {
@@ -60,9 +60,9 @@ const navItems: NavItem[] = [
     icon: Settings
   },
   {
-    id: 'contact',
+    id: 'Agentic',
     label: 'Contact',
-    href: '#contact',
+    href: '/client/agentic',
     icon: Phone
   }
 ];
